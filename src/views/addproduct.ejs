@@ -1,0 +1,74 @@
+
+<% if(cliente != "Admin"){ %>
+    <%- include('partials/header') -%>
+<% } %>
+<% if(cliente === "Admin"){ %> 
+    <%- include('partials/headerAdmin') -%>
+<% } %>  
+<% if (typeof errorMessage !== "undefined") { %>
+    <h1>ERROR</h1>
+    <p><%= errorMessage %></p>
+    <%  %> 
+<% } %>
+<div class="container">
+    <div class="row mt-4">
+        <div class="col-sm-3">
+            <form action="/addproduct/search" method="get" name="form">
+                <div class="form-group">
+                    <input type="text" id = "product_id" name="Codigosearch" placeholder="Ingrese Codigo" class="form-control">
+                </div>
+                <div class="row mt-3">
+                    <button type="submit" class="btn btn-secondary">Buscar Producto</button>
+                </div>
+            </form>
+        </div>
+    </div> 
+    
+    <div class="col-sm-5">
+        <% if(typeof addedProduct !== "undefined") {%> 
+            <form action="/addproduct/add" method="post" name="form">
+                <div class="form-group">
+                    <input type="hidden" name="codigo" value="<%= addedProduct[0].Codigo %> ">
+                    <input type="hidden" name="nombre" value="<%= addedProduct[0].Nombre %> ">
+                    <input type="text" id = "cantidad" name="Cantidad" placeholder="Cantidad" class="form-control">
+                    <input type="text" id = "Lote" name="Lote" placeholder="Lote" class="form-control">
+                    <input type="date" id = "fecha" name="Fecha_Ven" placeholder="Fecha_Vencimiento" class="form-control">
+                    <input type="number" id = "guia" name="Guia" placeholder="Numero de guia" class="form-control">
+                </div>
+                <div class="row mt-3">
+                    <button type="submit" class="btn btn-secondary">Añadir Producto</button>
+                </div>
+            </form>
+    </div>
+            <% } %> 
+    <div class="row mt-3">
+        <% if(typeof addedProduct !== "undefined") {%> 
+        <table class="table table-hover">
+            <thead>
+                <tr class="table-danger">
+                    <th>Descripcion</th>
+                    <th>Cantidad</th>
+                    <th>Lote</th>
+                    <th>Fecha Vencimiento</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(var i = 0 ; i < addedProduct.length ; i++){ %> 
+                <tr>
+                    <td><%= addedProduct[i].Nombre %> </td>
+                    <td><%= addedProduct[i].Cantidad%> </td>
+                    <td><%= addedProduct[i].Lote %> </td>
+                    <td><%= addedProduct[i].Fecha_Ven %> </td>
+                    <% cant += addedProduct[i].Cantidad %> 
+                </tr>
+                <% } %> 
+            </tbody>
+        </table>
+        <strong> Cantidad total <%= cant %> </strong>
+        <% } %>  
+    </div>
+</div>
+
+
+
+<%- include ('partials/footer'); %>

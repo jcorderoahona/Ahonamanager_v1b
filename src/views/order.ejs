@@ -1,0 +1,122 @@
+
+<% if(sesion != "Admin"){ %>
+    <%- include('partials/header') -%>
+<% } %>
+<% if(sesion === "Admin"){ %> 
+    <%- include('partials/headerAdmin') -%>
+<% } %>  
+
+<% if (typeof errorMessage !== "undefined") { %>
+    <h1>ERROR</h1>
+    <p><%= errorMessage %></p>
+    <%  %> 
+<% } %>
+
+<div class="container">
+    <div class="row mt-2 ">
+        <div class="col-sm-3">
+            <form action="/order/add" method="post" name="form">
+                <div class="form-group">
+                    <input type="text" id = "product_id" name="IdProducto" placeholder="Codigo" class="form-control">
+                    <input type="number" id = "qty" name="qty" placeholder="Cantidad" class="form-control">
+                    <input type="number" id = "Precio" name="Precio" placeholder="Precio" class="form-control" step="0.01">
+                    <input type="number" id = "Descuento" name="Descuento" placeholder="Descuento" class="form-control">
+                </div>
+                <div class="row mt-3">
+                    <button type="submit" class="btn btn-secondary">Añadir Producto</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-7 offset-md-2">
+            <table class="table table-hover">
+                <thead>
+                    <tr class="table-info">
+                    <th scope="col">Codigo</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Precio por unidad</th>
+                    <th scope="col">Precio Total</th>
+                    <th scope="col">Descuento</th>
+                    <th scope="col">Precio Final</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if(typeof cart !== "undefined") { %>
+                        <% for(var i = 0; i < cart.product.length; i++) { %>
+                        <tr>
+                            <td> <%= cart.product[i].id %> </td>
+                            <td> <%= cart.product[i].qty %> </td>  
+                            <td> <%= new Intl.NumberFormat('es-CL', {currency: 'CLP', style: 'currency'}).format(cart.product[i].price)%> </td>
+                            <td> <%= new Intl.NumberFormat('es-CL', {currency: 'CLP', style: 'currency'}).format(cart.product[i].price * cart.product[i].qty) %> </td>
+                            <td> <%= cart.product[i].discount %>%</td>  
+                            <td> <%= new Intl.NumberFormat('es-CL', {currency: 'CLP', style: 'currency'}).format(cart.product[i].discountprice * cart.product[i].qty) %> </td>  
+                            <td>
+                                <form action="/order/delete" method="post">
+                                    <input type="hidden" name= "productId" value= "<%= cart.product[i].id %>"">
+                                    <button type="submit" class="btn btn-secondary">Borrar Producto</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% } %>
+                    <% } %>
+                </tbody>
+            </table>
+            <div class="container">
+                <form action="/order/reporte" method="post" name="reporteform">
+                    <div class="form-group">
+                        <label  class="form-label mt-4">Cliente</label>
+                        <select class="form-select" name="clienteNombre" id = "cliente">
+                            <option value="">Seleccion Cliente</option>
+                            <% if(typeof cliente !== "undefined") { %>
+                                <% for(var i = 0; i < cliente.length; i++){%>
+                                    <option value="<%= cliente[i].Nombre %> "><%= cliente[i].Nombre %></option>
+                                <% } %>  
+                            <% } %> 
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label  class="form-label mt-4">Direccion</label>
+                        <select class="form-select" name="direccion" id = "direccion">
+                            <option value="">Seleccion Direccion</option>
+                        </select>
+                    </div>
+                    <% if(typeof cart !== "undefined") { %>
+                        <button type="submit" class="btn btn-info mt-4">Generar reporte</button>
+                    <% } %>
+                    <% if(typeof order !== "undefined") { %>
+                        <a href="/order/download/<%=order %>" class="btn btn-danger"> DESCARGAR</a>
+                    <% } %>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //Dynamic display cliente direccion
+    function _(element){
+        //console.log(document.getElementById(element));
+        return document.getElementById(element);
+    };
+    function fetchData(parentElement,childElement,type){
+        fetch('add/get_data?type='+type+'&parentelement='+parentElement.value+' ').then(
+            function(response){
+                return response.json();
+            }).then(function(responseData){
+                var html = '';
+                if(type == 'load_address'){
+                    html = '<option value=""> Seleccion Direccion </option>';
+                }
+                for(var i=0;i<responseData.length;i++){
+                    html+='<option value="'+responseData[i]+'">'+responseData[i]+ '</option>';
+                }
+                childElement.innerHTML = html;
+                //console.log(html);
+            })
+    };
+
+    _("cliente").onchange = function(){
+        //console.log(_('cliente'));
+        fetchData(_('cliente'),_('direccion'), 'load_address');
+    };
+</script>
+<%- include ('partials/footer'); %>

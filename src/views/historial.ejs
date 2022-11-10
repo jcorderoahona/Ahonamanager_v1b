@@ -1,0 +1,52 @@
+
+<% if(cliente != "Admin"){ %>
+    <%- include('partials/header') -%>
+<% } %>
+<% if(cliente === "Admin"){ %> 
+    <%- include('partials/headerAdmin') -%>
+<% } %>  
+<div class="container"> 
+    <div class="row mt-4">
+        <div class="col-sm-4">
+            <form action="/historial/search" method="get" name="form">
+                <div class="form-group">
+                    <input type="text" name="busqueda"  class="form-control" placeholder="Ingrese numero de orden o nombre del cliente">
+                </div>
+                <div class="col mt-3">
+                    <button type="submit" class="btn btn-secondary"> Buscar codigo </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row mt-8">
+        <p>Buscar,fecha vencimiento,cantidad</p>
+        <table class="table table-hover">
+            <thead>
+                <tr class="col-sm-1">
+                <th class="col-sm-2">IdOrden</th>
+                <th scope="row" class="col-sm-3">Cliente</th>
+                <th scope="row" class="col-sm-4">Fecha</th>
+                <th scope="row"class="col-sm-1">Descripcion</th>
+                <th scope="row">Direccion</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if(typeof records !== "undefined") { %>
+                    <% for(var i = 0; i < records.length; i++) { %>
+                    <tr>
+                        <td style="color:black"> <%= records[i].IdOrden %> </td>
+                        <td> <%= records[i].Cliente %> </td>  
+                        <td> <%= records[i].Fecha %> </td>
+                        <td> <%= records[i].Descripcion %> </td>
+                        <td> <%= records[i].Direccion %></td>
+                        <td>
+                            <a href="/order/download/<%=records[i].IdOrden %>" class="btn btn-danger"> DESCARGAR</a>
+                        </td>
+                    </tr>
+                    <% } %>
+                <% } %>
+            </tbody>
+        </table>
+    </div> 
+</div>
+<%- include ('partials/footer'); %>

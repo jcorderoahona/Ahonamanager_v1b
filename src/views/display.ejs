@@ -1,0 +1,84 @@
+
+<% if(cliente != "Admin"){ %>
+    <%- include('partials/header') -%>
+<% } %>
+<% if(cliente === "Admin"){ %> 
+    <%- include('partials/headerAdmin') -%>
+<% } %>  
+
+<div class="container">
+    <div class="row mt-4 ">
+        <table class="table table-hover">
+            <thead>
+                <tr class="table-secondary">
+                <th scope="row" class="col-sm-1">Codigo</th>
+                <th scope="row">Nombre</th>
+                <th scope="row">Cantidad</th>
+                <th scope="row">Precio</th>
+                <th scope="row">Fecha Vencimiento</th>
+                <th scope="row">Lote</th>
+                <th scope="row">Unidad de medida</th>
+                <th scope="row">Bodega</th>
+                <th scope="row" class="col-sm-2" >Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if(typeof productos !== "undefined") { %>
+                    <% for(var i = 0; i < productos.length; i++) { %>
+                    <tr>
+                        <td  id = "codigo" value="<%= productos[i].Codigo %>" > <%= productos[i].Codigo %> </td>
+                        <td> <%= productos[i].Nombre %> </td>  
+                        <td> <%= productos[i].Cantidad %> </td>
+                        <td> <%= new Intl.NumberFormat('es-CL', {currency: 'CLP', style: 'currency'}).format(productos[i].Precio_mostrado) %> </td>
+                        <td> <%= productos[i].Fecha_Ven %> </td>
+                        <td> <%= productos[i].Lote %></td>
+                        <td> <%= productos[i].Unidad_Medida %></td>
+                        <td> <%= productos[i].Bodega %></td>
+                        <td>
+                        <select value = <%=productos[i].Codigo%> class="form-select" name="estado" id ="estado" onchange="fetchData(this)">
+                            <option value="<% productos[i].Estado %>"> <%= productos[i].Estado %></option>
+                                <% if(productos[i].Estado == "Sin stock"){"a"}%>
+                                <% var state1 = " ";var state2 = " ";%>
+                                <% if(productos[i].Estado === "Aprobado"){ %>
+                                    <% state1 = "Rechazado";state2 = "Cuarentena"; %>
+                                <% };%>
+                                <% if(productos[i].Estado === "Rechazado"){ %>
+                                    <% state1 = "Aprobado";state2 = "Cuarentena"; %>
+                                <% };%>
+                                <% if(productos[i].Estado === "Cuarentena"){ %>
+                                    <% state1 = "Rechazado";state2 = "Aprobado"; %>
+                                <%};%>
+                                <% if(state1 !== " "){ %> 
+                                    <option value="<%= state1 %>"> <%= state1 %></option>
+                                    <option value="<%= state2 %>"> <%= state2 %></option>
+                                <% } %> 
+                        </select>  
+                        </td>
+                    </tr>
+                    <% } %>
+                <% } %>
+            </tbody>
+        </table>
+    </div> 
+</div>
+
+<script>
+    //Dynamic display cliente direccion
+    function _(element){
+        //console.log(document.getElementById(element));
+        return document.getElementById(element);
+    };
+    function fetchData(codigo){
+        //console.log(codigo.getAttribute('value'));
+        //console.log(codigo.value);
+        fetch('/display/get_data?state='+codigo.value+'&codigo='+codigo.getAttribute('value')+' ') 
+        document.location.reload();
+    };
+    /*
+    _('estado').onchange = () => fetchData(_('estado'),_('codigo'));
+    */ 
+</script>
+
+
+
+<%- include ('partials/footer'); %>
